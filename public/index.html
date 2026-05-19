@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        Salesforce sObject Explorer
+    </title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body class="h-screen overflow-hidden text-slate-900">
+
+    <div class="app-shell">
+
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <p class="brand-kicker">
+                    Salesforce REST
+                </p>
+
+                <h1>
+                    sObject Explorer
+                </h1>
+
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Explorer sections">
+
+                <button class="nav-button active" data-view="crud">
+                    <span>CRUD</span>
+                    <small>Records, updates, deleted history</small>
+                </button>
+
+                <button class="nav-button" data-view="describe">
+                    <span>Describe</span>
+                    <small>Fields and metadata</small>
+                </button>
+
+                <button class="nav-button" data-view="query">
+                    <span>Query</span>
+                    <small>SOQL for selected object</small>
+                </button>
+
+            </nav>
+
+        </aside>
+
+        <main class="main-pane">
+
+            <header class="topbar">
+
+                <div>
+
+                    <p class="eyebrow">
+                        Selected sObject
+                    </p>
+
+                    <h2 id="pageTitle">
+                        sObject CRUD
+                    </h2>
+
+                    <p id="selectedObjectSummary" class="muted">
+                        Loading available Salesforce objects...
+                    </p>
+
+                </div>
+
+                <div class="object-picker">
+
+                    <label for="objectSelect">
+                        sObject
+                    </label>
+
+                    <select id="objectSelect">
+                        <option value="">
+                            Loading sObjects...
+                        </option>
+                    </select>
+
+                </div>
+
+            </header>
+
+            <section class="workspace">
+
+                <div id="endpointBox" class="endpoint-box">
+                    GET /services/data/v64.0/sobjects/{sObjectApiName}/{Id}
+                </div>
+
+                <section id="crudView" class="view-section active">
+
+                    <div class="panel request-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <p class="eyebrow">
+                                    REST Endpoint
+                                </p>
+
+                                <h3>
+                                    sObject CRUD
+                                </h3>
+
+                            </div>
+
+                            <span id="capabilityBadge" class="status-pill">
+                                Ready
+                            </span>
+
+                        </div>
+
+                        <div class="method-tabs">
+
+                            <button id="getTab" class="method-tab active" data-action="get" data-method="GET">
+                                Get Record
+                            </button>
+
+                            <button id="recentTab" class="method-tab" data-action="recent" data-method="GET">
+                                Recently Updated
+                            </button>
+
+                            <button id="deletedTab" class="method-tab" data-action="deleted" data-method="GET">
+                                Deleted Records
+                            </button>
+
+                            <button id="postTab" class="method-tab" data-action="create" data-method="POST">
+                                Create Record
+                            </button>
+
+                            <button id="patchTab" class="method-tab" data-action="update" data-method="PATCH">
+                                Update Record
+                            </button>
+
+                            <button id="deleteTab" class="method-tab" data-action="delete" data-method="DELETE">
+                                Delete Record
+                            </button>
+
+                        </div>
+
+                        <div class="field-grid">
+
+                            <label id="recordIdGroup" class="input-group">
+                                <span>Record Id</span>
+                                <input id="recordIdInput" type="text" placeholder="Enter Salesforce record Id" />
+                            </label>
+
+                            <label id="requestBodyGroup" class="input-group hidden">
+                                <span>Request Body JSON</span>
+                                <textarea id="requestBody" placeholder='{"Name": "Example"}'></textarea>
+                            </label>
+
+                        </div>
+
+                        <button id="executeCrudBtn" class="primary-button">
+                            Execute Request
+                        </button>
+
+                    </div>
+
+                </section>
+
+                <section id="describeView" class="view-section">
+
+                    <div class="panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <p class="eyebrow">
+                                    Object Metadata
+                                </p>
+
+                                <h3>
+                                    Describe API
+                                </h3>
+
+                            </div>
+
+                            <button id="describeBtn" class="secondary-button">
+                                Refresh Describe
+                            </button>
+
+                        </div>
+
+                        <div id="describeSummary" class="metadata-grid">
+                            Select an sObject to load describe metadata.
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <section id="queryView" class="view-section">
+
+                    <div class="panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <p class="eyebrow">
+                                    SOQL
+                                </p>
+
+                                <h3>
+                                    Query API
+                                </h3>
+
+                            </div>
+
+                            <button id="queryBtn" class="secondary-button">
+                                Run Query
+                            </button>
+
+                        </div>
+
+                        <label class="input-group">
+                            <span>SOQL Query</span>
+                            <textarea id="queryInput" class="query-input"></textarea>
+                        </label>
+
+                    </div>
+
+                </section>
+
+                <section class="panel response-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                Response
+                            </p>
+
+                            <h3>
+                                JSON Output
+                            </h3>
+
+                        </div>
+
+                        <span id="responseStatus" class="status-pill">
+                            Idle
+                        </span>
+
+                    </div>
+
+                    <pre id="responseContainer">Waiting for API response...</pre>
+
+                </section>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
