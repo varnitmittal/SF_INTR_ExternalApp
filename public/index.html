@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>
-        Salesforce sObject Explorer
+        SF External
     </title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,33 +26,65 @@
             <div class="brand">
 
                 <p class="brand-kicker">
-                    Salesforce REST
+                    Salesforce
                 </p>
 
                 <h1>
-                    sObject Explorer
+                    <span class="brand-icon">⚡</span>
+                    <span class="brand-text">SF External</span>
                 </h1>
 
             </div>
 
             <nav class="sidebar-nav" aria-label="Explorer sections">
 
-                <button class="nav-button active" data-view="crud">
-                    <span>CRUD</span>
-                    <small>Records, updates, deleted history</small>
+                <button class="nav-button active" data-view="crud" data-tooltip="CRUD" aria-label="CRUD">
+                    <span class="nav-button-icon">✎</span>
+                    <div class="nav-button-label">
+                        <span class="nav-button-text">CRUD</span>
+                        <small>Records, updates, deleted history</small>
+                    </div>
                 </button>
 
-                <button class="nav-button" data-view="describe">
-                    <span>Describe</span>
-                    <small>Fields and metadata</small>
+                <button class="nav-button" data-view="describe" data-tooltip="Describe" aria-label="Describe">
+                    <span class="nav-button-icon">◯</span>
+                    <div class="nav-button-label">
+                        <span class="nav-button-text">Describe</span>
+                        <small>Fields and metadata</small>
+                    </div>
                 </button>
 
-                <button class="nav-button" data-view="query">
-                    <span>Query</span>
-                    <small>SOQL for selected object</small>
+                <button class="nav-button" data-view="query" data-tooltip="Query" aria-label="Query">
+                    <span class="nav-button-icon">☆</span>
+                    <div class="nav-button-label">
+                        <span class="nav-button-text">Query</span>
+                        <small>SOQL for selected object</small>
+                    </div>
+                </button>
+
+                <button class="nav-button" data-view="org" data-tooltip="Org Status" aria-label="Org Status">
+                    <span class="nav-button-icon">◈</span>
+                    <div class="nav-button-label">
+                        <span class="nav-button-text">Org Status</span>
+                        <small>Limit usage and org health</small>
+                    </div>
+                </button>
+
+                <button class="nav-button" data-view="files" data-tooltip="Files" aria-label="Files">
+                    <span class="nav-button-icon">☐</span>
+                    <div class="nav-button-label">
+                        <span class="nav-button-text">Files</span>
+                        <small>ContentVersion upload and preview</small>
+                    </div>
                 </button>
 
             </nav>
+
+            <div class="sidebar-footer">
+                <button id="sidebarToggleBtn" class="sidebar-toggle" aria-label="Toggle sidebar">
+                    <span class="sidebar-toggle-icon">☰</span>
+                </button>
+            </div>
 
         </aside>
 
@@ -62,7 +94,7 @@
 
                 <div>
 
-                    <p class="eyebrow">
+                    <p id="topbarEyebrow" class="eyebrow">
                         Selected sObject
                     </p>
 
@@ -76,17 +108,29 @@
 
                 </div>
 
-                <div class="object-picker">
+                <div class="topbar-actions">
 
-                    <label for="objectSelect">
-                        sObject
-                    </label>
+                    <div class="object-picker">
 
-                    <select id="objectSelect">
-                        <option value="">
-                            Loading sObjects...
-                        </option>
-                    </select>
+                        <label for="objectSelect">
+                            sObject
+                        </label>
+
+                        <select id="objectSelect">
+                            <option value="">
+                                Loading sObjects...
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <button id="refreshOrgBtn" class="secondary-button hidden">
+                        Refresh
+                    </button>
+
+                    <button id="showMoreOrgBtn" class="secondary-button hidden">
+                        Show more
+                    </button>
 
                 </div>
 
@@ -232,6 +276,168 @@
                             <span>SOQL Query</span>
                             <textarea id="queryInput" class="query-input"></textarea>
                         </label>
+
+                    </div>
+
+                </section>
+
+                <section id="orgView" class="view-section">
+
+                    <div class="panel org-status-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <p class="eyebrow">
+                                    Org Overview
+                                </p>
+
+                                <h3>
+                                    Org Status
+                                </h3>
+
+                            </div>
+
+                            <span id="orgStatusUpdated" class="status-pill">
+                                Last refresh: —
+                            </span>
+
+                        </div>
+
+                        <div id="orgStatusCards" class="org-status-grid">
+                            <div class="org-status-card">
+                                Loading org usage metrics...
+                            </div>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <section id="filesView" class="view-section">
+
+                    <div class="files-grid">
+
+                        <div class="panel files-list-panel">
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <p class="eyebrow">
+                                        Salesforce Files
+                                    </p>
+
+                                    <h3>
+                                        Content Documents
+                                    </h3>
+
+                                </div>
+
+                                <button id="refreshFilesBtn" class="secondary-button">
+                                    Refresh
+                                </button>
+
+                            </div>
+
+                            <div class="file-table-wrap">
+
+                                <table class="field-table file-table">
+
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Type</th>
+                                            <th>Size</th>
+                                            <th>Modified</th>
+                                            <th>Owner</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="filesTableBody">
+                                        <tr>
+                                            <td colspan="6">Load files to begin.</td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                        <div class="panel upload-panel">
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <p class="eyebrow">
+                                        Upload
+                                    </p>
+
+                                    <h3>
+                                        New File
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                            <div class="field-grid">
+
+                                <label class="input-group">
+                                    <span>File</span>
+                                    <input id="fileInput" type="file" />
+                                </label>
+
+                                <label class="input-group">
+                                    <span>Title</span>
+                                    <input id="fileTitleInput" type="text" placeholder="Optional display title" />
+                                </label>
+
+                                <label class="input-group">
+                                    <span>Related Record Id</span>
+                                    <input id="fileRecordIdInput" type="text"
+                                        placeholder="Optional record Id to associate" />
+                                </label>
+
+                            </div>
+
+                            <button id="uploadFileBtn" class="primary-button">
+                                Upload File
+                            </button>
+
+                            <p class="fine-print">
+                                Upload limit in this tool: 25 MB. Browser save prompts depend on browser support and
+                                settings.
+                            </p>
+
+                        </div>
+
+                        <div class="panel file-preview-panel">
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <p class="eyebrow">
+                                        Preview
+                                    </p>
+
+                                    <h3 id="previewTitle">
+                                        Select a file
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                            <iframe id="filePreviewFrame" title="Salesforce file preview"></iframe>
+
+                        </div>
 
                     </div>
 
